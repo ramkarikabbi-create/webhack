@@ -10,8 +10,9 @@ function Budget() {
   const [education, setEducation] = useState("");
 
   async function saveBudget() {
-    if (!income) {
-      alert("Please enter your income");
+    // Income is required
+    if (!income || Number(income) <= 0) {
+      alert("Please enter a valid income");
       return;
     }
 
@@ -24,20 +25,23 @@ function Budget() {
       education: Number(education) || 0
     };
 
+    // Save budget to Supabase
     const { error } = await supabase
       .from("budgets")
       .insert([budget]);
 
     if (error) {
-      console.error(error);
+      console.error("Budget error:", error);
       alert("Failed to save budget");
       return;
     }
 
+    // Save budget locally so Dashboard can use it
     localStorage.setItem("budget", JSON.stringify(budget));
 
     alert("Budget saved successfully!");
 
+    // Clear form
     setIncome("");
     setFood("");
     setTransport("");
@@ -47,55 +51,86 @@ function Budget() {
   }
 
   return (
-    <div className="budget-container">
-      <h1>Set Your Budget</h1>
+    <main className="page">
 
-      <input
-        type="number"
-        placeholder="Income"
-        value={income}
-        onChange={(e) => setIncome(e.target.value)}
-      />
+      <div className="center-heading">
+        <span className="small-title">
+          PLAN YOUR MONEY
+        </span>
 
-      <input
-        type="number"
-        placeholder="Food"
-        value={food}
-        onChange={(e) => setFood(e.target.value)}
-      />
+        <h1>Set Your Budget</h1>
 
-      <input
-        type="number"
-        placeholder="Transport"
-        value={transport}
-        onChange={(e) => setTransport(e.target.value)}
-      />
+        <p>
+          Set your income and spending limits for the month.
+        </p>
+      </div>
 
-      <input
-        type="number"
-        placeholder="Shopping"
-        value={shopping}
-        onChange={(e) => setShopping(e.target.value)}
-      />
+      <div className="form-card">
 
-      <input
-        type="number"
-        placeholder="Bills"
-        value={bills}
-        onChange={(e) => setBills(e.target.value)}
-      />
+        <label>Monthly Income</label>
 
-      <input
-        type="number"
-        placeholder="Education"
-        value={education}
-        onChange={(e) => setEducation(e.target.value)}
-      />
+        <input
+          type="number"
+          placeholder="Example: 20000"
+          value={income}
+          onChange={(e) => setIncome(e.target.value)}
+        />
 
-      <button onClick={saveBudget}>
-        Save Budget
-      </button>
-    </div>
+        <label>Food Budget</label>
+
+        <input
+          type="number"
+          placeholder="Example: 4000"
+          value={food}
+          onChange={(e) => setFood(e.target.value)}
+        />
+
+        <label>Transport Budget</label>
+
+        <input
+          type="number"
+          placeholder="Example: 2000"
+          value={transport}
+          onChange={(e) => setTransport(e.target.value)}
+        />
+
+        <label>Shopping Budget</label>
+
+        <input
+          type="number"
+          placeholder="Example: 3000"
+          value={shopping}
+          onChange={(e) => setShopping(e.target.value)}
+        />
+
+        <label>Bills Budget</label>
+
+        <input
+          type="number"
+          placeholder="Example: 2000"
+          value={bills}
+          onChange={(e) => setBills(e.target.value)}
+        />
+
+        <label>Education Budget</label>
+
+        <input
+          type="number"
+          placeholder="Example: 3000"
+          value={education}
+          onChange={(e) => setEducation(e.target.value)}
+        />
+
+        <button
+          className="primary-btn save-btn"
+          onClick={saveBudget}
+        >
+          Save Budget
+        </button>
+
+      </div>
+
+    </main>
   );
 }
 
