@@ -12,21 +12,31 @@ function Goals() {
       return;
     }
 
-    const { error } = await supabase
+    const goal = {
+      goal_name: name,
+      target_amount: Number(target),
+      saved_amount: Number(saved)
+    };
+
+    console.log("Saving goal:", goal);
+
+    const { data, error } = await supabase
       .from("goals")
-      .insert([
-        {
-          goal_name: name,
-          target_amount: Number(target),
-          saved_amount: Number(saved)
-        }
-      ]);
+      .insert([goal])
+      .select();
 
     if (error) {
-      console.error(error);
-      alert("Failed to save goal");
+      console.error("SUPABASE GOAL ERROR:", error);
+
+      alert(
+        "Failed to save goal:\n\n" +
+        error.message
+      );
+
       return;
     }
+
+    console.log("Goal saved:", data);
 
     alert("Goal saved successfully!");
 
@@ -37,9 +47,29 @@ function Goals() {
 
   return (
     <main className="page">
-      <h1>🎯 Financial Goal</h1>
+
+      <div className="center-heading">
+        <span className="small-title">
+          PLAN YOUR FUTURE
+        </span>
+
+        <h1>🎯 Financial Goal</h1>
+
+        <p>
+          Set a target and track your savings progress.
+        </p>
+      </div>
 
       <div className="form-card">
+
+        <div className="form-section-title">
+          <span>🎯</span>
+
+          <div>
+            <h2>Create a Goal</h2>
+            <p>Enter your savings goal details.</p>
+          </div>
+        </div>
 
         <label>Goal Name</label>
 
@@ -52,27 +82,39 @@ function Goals() {
 
         <label>Target Amount</label>
 
-        <input
-          type="number"
-          placeholder="₹60000"
-          value={target}
-          onChange={(e) => setTarget(e.target.value)}
-        />
+        <div className="input-money">
+          <span>₹</span>
+
+          <input
+            type="number"
+            placeholder="60000"
+            value={target}
+            onChange={(e) => setTarget(e.target.value)}
+          />
+        </div>
 
         <label>Amount Saved</label>
 
-        <input
-          type="number"
-          placeholder="₹25000"
-          value={saved}
-          onChange={(e) => setSaved(e.target.value)}
-        />
+        <div className="input-money">
+          <span>₹</span>
 
-        <button onClick={saveGoal}>
-          Save Goal
+          <input
+            type="number"
+            placeholder="25000"
+            value={saved}
+            onChange={(e) => setSaved(e.target.value)}
+          />
+        </div>
+
+        <button
+          className="primary-btn save-btn"
+          onClick={saveGoal}
+        >
+          🎯 Save Goal
         </button>
 
       </div>
+
     </main>
   );
 }

@@ -4,12 +4,13 @@ function Home() {
   return (
     <div className="home-page">
 
+      {/* HERO SECTION */}
       <section className="hero-section">
 
         <div className="hero-content">
 
           <div className="hero-badge">
-            ✨ Take control of your money
+            ✨ TAKE CONTROL OF YOUR MONEY
           </div>
 
           <h1>
@@ -18,12 +19,13 @@ function Home() {
             <span>Save Smarter.</span>
           </h1>
 
-          <p>
+          <p className="hero-description">
             SmartBudget helps you manage your income, control your
-            spending and achieve your financial goals.
+            spending, and achieve your financial goals.
           </p>
 
           <div className="hero-buttons">
+
             <Link to="/dashboard">
               <button className="primary-btn">
                 View Dashboard →
@@ -35,90 +37,214 @@ function Home() {
                 Create Budget
               </button>
             </Link>
+
+          </div>
+
+          {/* Small trust text */}
+          <div className="hero-trust">
+            <span>✓ Easy to use</span>
+            <span>✓ Track expenses</span>
+            <span>✓ Set goals</span>
           </div>
 
         </div>
 
-        <div className="hero-card">
 
-          <div className="mini-card-header">
-            <span>Monthly Overview</span>
-            <span>•••</span>
+        {/* RIGHT SIDE FINANCE CARD */}
+        <div className="hero-visual">
+
+          <div className="floating-card card-one">
+            <span>💰</span>
+            <div>
+              <small>Monthly Income</small>
+              <strong>₹45,000</strong>
+            </div>
           </div>
 
-          <h2>₹30,000</h2>
-          <p className="muted">Available balance</p>
 
-          <div className="mini-stats">
+          <div className="money-card">
 
-            <div>
-              <span className="green-dot"></span>
+            <div className="money-card-header">
               <div>
-                <small>Income</small>
-                <strong>₹45,000</strong>
+                <span>Monthly Overview</span>
+                <h2>₹30,000</h2>
+                <p>Available balance</p>
+              </div>
+
+              <div className="overview-icon">
+                💰
               </div>
             </div>
 
-            <div>
-              <span className="red-dot"></span>
-              <div>
-                <small>Expenses</small>
-                <strong>₹15,000</strong>
+
+            <div className="money-stats">
+
+              <div className="money-stat">
+                <div className="stat-icon income-icon">
+                  ↗
+                </div>
+
+                <div>
+                  <small>Income</small>
+                  <strong>₹45,000</strong>
+                </div>
               </div>
+
+
+              <div className="money-stat">
+                <div className="stat-icon expense-icon">
+                  ↘
+                </div>
+
+                <div>
+                  <small>Expenses</small>
+                  <strong>₹15,000</strong>
+                </div>
+              </div>
+
+            </div>
+
+
+            <div className="budget-progress">
+
+              <div className="progress-header">
+                <span>Budget used</span>
+                <strong>50%</strong>
+              </div>
+
+              <div className="progress-bar">
+                <div className="progress-fill"></div>
+              </div>
+
             </div>
 
           </div>
 
-          <div className="mini-progress">
-            <div>
-              <span>Budget used</span>
-              <span>50%</span>
+
+          <div className="floating-card card-two">
+
+            <div className="goal-circle">
+              ✓
             </div>
 
-            <progress value="50" max="100"></progress>
+            <div>
+              <small>Savings Goal</small>
+              <strong>₹20,000</strong>
+              <span>75% completed</span>
+            </div>
+
           </div>
 
         </div>
 
       </section>
 
+
+      {/* FEATURES */}
       <section className="features-section">
 
         <div className="section-heading">
+
           <span>FEATURES</span>
-          <h2>Everything you need to manage your money</h2>
+
+          <h2>
+            Everything you need to manage your money
+          </h2>
+
+          <p>
+            Simple tools to help you understand, plan and improve
+            your financial life.
+          </p>
+
         </div>
+
 
         <div className="feature-grid">
 
           <div className="feature-card">
-            <div className="feature-icon purple">📊</div>
+
+            <div className="feature-icon purple">
+              📊
+            </div>
+
             <h3>Track Expenses</h3>
+
             <p>
-              Record your expenses and understand where your
-              money is going.
+              Record your expenses and understand exactly where
+              your money is going.
             </p>
+
+            <Link to="/expense">
+              Track spending →
+            </Link>
+
           </div>
 
+
           <div className="feature-card">
-            <div className="feature-icon blue">💰</div>
+
+            <div className="feature-icon blue">
+              💰
+            </div>
+
             <h3>Manage Budget</h3>
+
             <p>
               Create monthly budgets and keep your spending
               under control.
             </p>
+
+            <Link to="/budget">
+              Create budget →
+            </Link>
+
           </div>
 
+
           <div className="feature-card">
-            <div className="feature-icon orange">🎯</div>
+
+            <div className="feature-icon orange">
+              🎯
+            </div>
+
             <h3>Financial Goals</h3>
+
             <p>
-              Set savings goals and track your progress
-              towards achieving them.
+              Set savings goals and track your progress towards
+              achieving them.
             </p>
+
+            <Link to="/goals">
+              Set a goal →
+            </Link>
+
           </div>
 
         </div>
+
+      </section>
+
+
+      {/* BOTTOM CTA */}
+      <section className="home-cta">
+
+        <div>
+          <span>READY TO GET STARTED?</span>
+
+          <h2>
+            Take control of your finances today.
+          </h2>
+
+          <p>
+            Start planning your money smarter with SmartBudget.
+          </p>
+        </div>
+
+        <Link to="/budget">
+          <button className="primary-btn">
+            Create Your Budget →
+          </button>
+        </Link>
 
       </section>
 

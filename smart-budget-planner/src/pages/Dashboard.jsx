@@ -1,187 +1,183 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "../supabase";
 
 function Dashboard() {
-  const income =
-    Number(localStorage.getItem("income")) || 30000;
+  const [budget, setBudget] = useState({
+    income: 0,
+    food: 0,
+    transport: 0,
+    shopping: 0,
+    bills: 0,
+    education: 0
+  });
 
-  const expenses =
-    Number(localStorage.getItem("totalExpense")) || 14500;
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const remaining = income - expenses;
+  useEffect(() => {
+    loadDashboard();
+  }, []);
 
-  const [goal] = useState(
-    JSON.parse(localStorage.getItem("goal")) || {
-      name: "New Laptop",
-      target: 60000,
-      saved: 25000
+  async function loadDashboard() {
+    // Get budget from localStorage
+    const savedBudget = JSON.parse(
+      localStorage.getItem("budget")
+    );
+
+    if (savedBudget) {
+      setBudget(savedBudget);
     }
+
+    // Get expenses from Supabase
+    const { data, error } = await supabase
+      .from("expenses")
+      .select("*");
+
+    if (error) {
+      console.error("Error loading expenses:", error);
+      setLoading(false);
+      return;
+    }
+
+    setExpenses(data || []);
+    setLoading(false);
+  }
+
+  // Calculate total expenses
+  const totalExpenses = expenses.reduce(
+    (sum, item) => sum + Number(item.amount || 0),
+    0
   );
 
-  const goalPercentage =
-    goal.target > 0
-      ? Math.min((goal.saved / goal.target) * 100, 100)
-      : 0;
+  // Calculate remaining money
+  const remaining =
+    Number(budget.income || 0) - totalExpenses;
+
+  // Calculate category-wise spending
+  const getCategoryTotal = (categoryName) => {
+    return expenses
+      .filter(
+        (item) =>
+          item.category?.toLowerCase() ===
+          categoryName.toLowerCase()
+      )
+      .reduce(
+        (sum, item) => sum + Number(item.amount || 0),
+        0
+      );
+  };
+
+  const categories = [
+    {
+      name: "Food",
+      budget: Number(budget.food || 0),
+      spent: getCategoryTotal("Food")
+    },
+    {
+      name: "Transport",
+      budget: Number(budget.transport || 0),
+      spent: getCategoryTotal("Transport")
+    },
+    {
+      name: "Shopping",
+      budget: Number(budget.shopping || 0),
+      spent: getCategoryTotal("Shopping")
+    },
+    {
+      name: "Bills",
+      budget: Number(budget.bills || 0),
+      spent: getCategoryTotal("Bills")
+    },
+    {
+      name: "Education",
+      budget: Number(budget.education || 0),
+      spent: getCategoryTotal("Education")
+    }
+  ];
+
+  if (loading) {
+    return (
+      <main className="page">
+        <h1>Dashboard</h1>
+        <p>Loading dashboard...</p>
+      </main>
+    );
+  }
 
   return (
-    <main className="page-container">
+    <main className="page">
 
-      <div className="page-header">
-        <div>
-          <span className="page-label">OVERVIEW</span>
-          <h1>Dashboard</h1>
-          <p>Here's your financial summary.</p>
-        </div>
-      </div>
+      <h1>Dashboard</h1>
 
-      <div className="stats-grid">
+      <div className="dashboard-grid">
 
-        <div className="dashboard-stat income-card">
-          <div className="stat-top">
-            <div className="stat-icon">💵</div>
-            <span className="stat-label">INCOME</span>
-          </div>
-
-          <h2>₹{income.toLocaleString()}</h2>
-
-          <p className="positive">
-            ↑ Monthly income
-          </p>
+        <div className="stat-card income">
+          <h3>Monthly Income</h3>
+          <h2>₹{Number(budget.income || 0)}</h2>
         </div>
 
-        <div className="dashboard-stat expense-card">
-          <div className="stat-top">
-            <div className="stat-icon">💸</div>
-            <span className="stat-label">EXPENSES</span>
-          </div>
-
-          <h2>₹{expenses.toLocaleString()}</h2>
-
-          <p className="negative">
-            ↓ Total spending
-          </p>
+        <div className="stat-card expense">
+          <h3>Total Expenses</h3>
+          <h2>₹{totalExpenses}</h2>
         </div>
 
-        <div className="dashboard-stat balance-card">
-          <div className="stat-top">
-            <div className="stat-icon">💎</div>
-            <span className="stat-label">BALANCE</span>
-          </div>
-
-          <h2>₹{remaining.toLocaleString()}</h2>
-
-          <p className="positive">
-            ✓ Available balance
-          </p>
+        <div className="stat-card remaining">
+          <h3>Remaining</h3>
+          <h2>₹{remaining}</h2>
         </div>
 
       </div>
 
-      <div className="dashboard-layout">
+      <div className="card">
 
-        <div className="dashboard-panel">
+        <h2>Budget Overview</h2>
 
-          <div className="panel-header">
-            <div>
-              <h2>Budget Overview</h2>
-              <p>Your spending by category</p>
+        {categories.map((item) => {
+
+          // Calculate percentage
+          const percentage =
+            item.budget > 0
+              ? Math.min(
+                  (item.spent / item.budget) * 100,
+                  100
+                )
+              : 0;
+
+          // Check if limit is reached
+          const limitReached =
+            item.budget > 0 &&
+            item.spent >= item.budget;
+
+          return (
+            <div
+              className="progress-item"
+              key={item.name}
+            >
+
+              <span>{item.name}</span>
+
+              <progress
+                value={percentage}
+                max="100"
+              ></progress>
+
+              <span>
+                ₹{item.spent} / ₹{item.budget}
+              </span>
+
+              {limitReached && (
+                <strong className="limit-reached">
+                  ⚠️ Limit Reached
+                </strong>
+              )}
+
             </div>
-          </div>
-
-          <BudgetBar
-            name="Food"
-            spent={3000}
-            budget={5000}
-            color="purple"
-          />
-
-          <BudgetBar
-            name="Transport"
-            spent={2000}
-            budget={3000}
-            color="blue"
-          />
-
-          <BudgetBar
-            name="Shopping"
-            spent={4000}
-            budget={4000}
-            color="orange"
-          />
-
-          <BudgetBar
-            name="Bills"
-            spent={5000}
-            budget={6000}
-            color="green"
-          />
-
-        </div>
-
-        <div className="dashboard-panel goal-dashboard">
-
-          <div className="panel-header">
-            <div>
-              <h2>🎯 Your Goal</h2>
-              <p>{goal.name}</p>
-            </div>
-          </div>
-
-          <div className="goal-circle">
-            <strong>{goalPercentage.toFixed(0)}%</strong>
-            <span>completed</span>
-          </div>
-
-          <div className="goal-numbers">
-            <div>
-              <small>Saved</small>
-              <strong>₹{goal.saved.toLocaleString()}</strong>
-            </div>
-
-            <div>
-              <small>Target</small>
-              <strong>₹{goal.target.toLocaleString()}</strong>
-            </div>
-          </div>
-
-          <progress
-            value={goalPercentage}
-            max="100"
-            className="goal-progress"
-          ></progress>
-
-        </div>
+          );
+        })}
 
       </div>
 
     </main>
-  );
-}
-
-function BudgetBar({ name, spent, budget, color }) {
-  const percentage = Math.min((spent / budget) * 100, 100);
-
-  return (
-    <div className="budget-row">
-
-      <div className="budget-title">
-        <div>
-          <strong>{name}</strong>
-          <span>
-            ₹{spent.toLocaleString()} / ₹{budget.toLocaleString()}
-          </span>
-        </div>
-
-        <b>{percentage.toFixed(0)}%</b>
-      </div>
-
-      <div className="bar-background">
-        <div
-          className={`bar-fill ${color}`}
-          style={{ width: `${percentage}%` }}
-        ></div>
-      </div>
-
-    </div>
   );
 }
 
